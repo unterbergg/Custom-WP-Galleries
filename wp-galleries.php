@@ -164,7 +164,6 @@ class Custom_Wp_Galleries
     {
         wp_nonce_field( basename( __FILE__ ), 'cwg_nonce' );
         $cwg_stored_meta = get_post_meta( $post->ID );
-        ob_start();
         echo "<div class='wrap'>";
         echo "    <input type='button' id='add-input' value='Add Image'>";
         echo "    <div id='images-container'>";
@@ -185,10 +184,6 @@ class Custom_Wp_Galleries
 
         echo "    </div>";
         echo "</div>";
-        $output = ob_get_contents();
-        ob_end_clean();
-
-        return $output;
     }
 
     /**
