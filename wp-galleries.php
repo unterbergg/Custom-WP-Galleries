@@ -36,6 +36,7 @@ class Custom_Wp_Galleries
         add_action('save_post', array($this,'save_custom_meta'), 1);
 
         add_shortcode('custom-wp-gallery', array($this, 'cwg_shortcode_callback'));
+        add_action('wp_enqueue_scripts', array($this, 'front_scripts'));
     }
 
     /**
@@ -54,14 +55,28 @@ class Custom_Wp_Galleries
     }
 
     /**
-     * Admin styles
+     * Admin styles and scripts
      *
      * @return void
      */
     public function admin_scripts()
     {
-        wp_register_script( 'cwg-script', plugin_dir_url( __FILE__ ) . 'assets/js/script.js', array( 'jquery' ), CWG_VERSION, 'all'  );
+        wp_register_script( 'cwg-script', plugin_dir_url( __FILE__ ) . 'assets/js/admin-script.js', array('jquery'), CWG_VERSION, 'all');
         wp_enqueue_script( 'cwg-script' );
+    }
+
+    /**
+     * Front styles and scripts
+     *
+     * @return void
+     */
+    public function front_scripts()
+    {
+        wp_enqueue_style('cwg_style', plugin_dir_url( __FILE__ ) . 'assets/css/style.css', array(), CWG_VERSION);
+        wp_enqueue_style('cwg_lightgallery_style', plugin_dir_url( __FILE__ ) . 'assets/css/lightgallery.css', array(), CWG_VERSION);
+
+        wp_enqueue_script('cwg_lightgallery_script', plugin_dir_url( __FILE__ ) . 'assets/js/lightgallery.min.js', array('jquery'), CWG_VERSION, 'all');
+        wp_enqueue_script('cwg_script', plugin_dir_url( __FILE__ ) . 'assets/js/script.js', array('jquery', 'cwg_lightgallery_script'), CWG_VERSION, 'all');
     }
 
     /**
@@ -105,20 +120,28 @@ class Custom_Wp_Galleries
                     }
 
                     $attach_id = attachment_url_to_postid($value[0]);
-                    $attach_size_image_url = wp_get_attachment_image_url($attach_id, $atts['gallery-size']);
-                    array_push($images, $attach_size_image_url);
+                    $attach_size_thumb_url = wp_get_attachment_image_url($attach_id, $atts['gallery-size']);
+                    $attach_size_image_url = wp_get_attachment_image_url($attach_id, 'full');
+                    $images[] = [
+                        'thumb' => $attach_size_thumb_url,
+                        'origin' => $attach_size_image_url
+                    ];
+//                    array_push($images, $attach_size_image_url);
                 }
 
             }
             wp_reset_postdata();
         }
 
+        $align_items = $atts['gallery-size'] === 'medium-gallery' ? 'align-center' : '';
         ob_start();
+        echo "<div id='lightgallery' class='cwg-gallery {$align_items}'>";
         foreach ($images as $image) {
-            echo "<div class='test'>";
-            echo "    <img src='{$image}' alt=''>";
-            echo "</div>";
+            echo "    <a href='{$image['origin']}'>";
+            echo "      <img src='{$image['thumb']}' alt=''>";
+            echo "    </a>";
         }
+        echo "</div>";
         $output = ob_get_contents();
         ob_end_clean();
 

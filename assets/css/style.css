@@ -1,0 +1,8 @@
+.cwg-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.cwg-gallery.align-center {
+    justify-content: center;
+}
