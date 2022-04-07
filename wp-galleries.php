@@ -31,7 +31,7 @@ class Custom_Wp_Galleries
     {
         add_action('init', array($this, 'create_cpt'));
         add_action('plugins_loaded', array($this, 'image_sizes'), 0);
-        add_action('admin_enqueue_scripts',	array($this, 'admin_scripts'));
+        add_action('admin_enqueue_scripts', array($this, 'admin_scripts'));
         add_action('add_meta_boxes', array($this, 'create_metaboxes'));
         add_action('save_post', array($this,'save_custom_meta'), 1);
 
@@ -126,7 +126,6 @@ class Custom_Wp_Galleries
                         'thumb' => $attach_size_thumb_url,
                         'origin' => $attach_size_image_url
                     ];
-//                    array_push($images, $attach_size_image_url);
                 }
 
             }
